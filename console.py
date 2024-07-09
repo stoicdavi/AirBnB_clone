@@ -1,7 +1,7 @@
 #!/usr/bin/python3
 from cmd import Cmd
 
-class MyInterpreter(Cmd):
+class HBnBCommand(Cmd):
     '''Simple command processor example.'''
     # Introduction text displayed when the interpreter starts
     intro1 = "(hbnb) help\n\nDocumented commands (type help <topic>):\n========================================\nEOF  help  quit\n\n"
@@ -28,5 +28,5 @@ class MyInterpreter(Cmd):
 
 if __name__ == "__main__":
     # Create an instance of the interpreter and start the command loop
-    interpreter = MyInterpreter()
+    interpreter = HBnBCommand()
     interpreter.cmdloop()
