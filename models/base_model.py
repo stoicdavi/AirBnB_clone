@@ -1,35 +1,60 @@
-from uuid import uuid4
+#!/usr/bin/python3
+"""Module base_model
+
+This Module contains a definition for BaseModel Class
+"""
+
+import uuid
 from datetime import datetime
+
 import models
 
+
 class BaseModel:
-    def __init__(self, **kwargs) -> None:
-        if kwargs:
+    """BaseModel Class"""
+
+    def __init__(self, *args, **kwargs):
+        """__init__ method & instantiation of class Basemodel
+
+        Args:
+            *args.
+            **kwargs (dict): Key/value pairs
+        """
+        self.id = str(uuid.uuid4())
+        self.created_at = datetime.now()
+        self.updated_at = datetime.now()
+
+        if kwargs is not None and len(kwargs) > 0:
             for k, v in kwargs.items():
-                if k == '__class__':
+                if k == "__class__":
                     continue
-                
-                if k in ['created_at', 'updated_at'] and isinstance(v, str):
-                    v = datetime.fromisoformat(v)
-                
-                setattr(self, k, v)
+                elif k in ["created_at", "updated_at"]:
+                    setattr(self, k, datetime.fromisoformat(v))
+                else:
+                    setattr(self, k, v)
         else:
-            self.id = str(uuid4())
-            self.created_at = datetime.now()
-            self.updated_at = self.created_at
-        
-        models.storage.new(self)
+            models.storage.new(self)
 
-    def __str__(self) -> str:
-        return f"[{self.__class__.__name__}] ({self.id}) {self.__dict__}"
-
-    def save(self) -> None:
+    def save(self):
+        """Update updated_at with the current datetime."""
         self.updated_at = datetime.now()
         models.storage.save()
 
-    def to_dict(self) -> dict:
-        to_json = self.__dict__.copy()  # Make a copy to avoid modifying the original __dict__
-        to_json["__class__"] = self.__class__.__name__
-        to_json["created_at"] = to_json["created_at"].isoformat()
-        to_json["updated_at"] = to_json["updated_at"].isoformat()
-        return to_json
+    def to_dict(self):
+        """
+        returns a dictionary containing all
+        keys/values of __dict__ of the instance
+        """
+        bs_dict = (
+            {
+                k: (v.isoformat() if isinstance(v, datetime) else v)
+                for (k, v) in self.__dict__.items()
+            }
+        )
+        bs_dict["__class__"] = self.__class__.__name__
+        return bs_dict
+
+    def __str__(self) -> str:
+        """should print/str representation of the BaseModel instance."""
+        return f"[{self.__class__.__name__}] ({self.id}) {self.__dict__}"
+
